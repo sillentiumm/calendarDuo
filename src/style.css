@@ -97,6 +97,7 @@ input, button {
   align-items: start;
   flex-wrap: wrap;
   background-color: white;
+  
 }
 
 .calendar_cell {
