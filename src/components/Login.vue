@@ -1,13 +1,12 @@
 <template>
   <div class="login">
-    <div class="form">
+    <div class="login-form">
       <form 
-        v-if="!showReg"
         @submit.prevent="login"
         class="form_data" 
       >
         <h2 class="form__title">
-          Login
+          Вход в аккаунт
         </h2>
         <input 
           type="email"
@@ -21,49 +20,19 @@
         />
         <input
           type="submit"
-          value="Login"
+          value="Войти"
         />
       </form>
-
-      <button
-        v-if="!showReg" 
-        @click="changeRegVisible"
+      <div 
+        class="login-text"
         >
-        Зарегистрироваться
-      </button>
-
-      <form 
-        v-if="showReg"
-        @submit.prevent="register" 
-        class="form_data"
-      >
-        <h2 class="form__title">
-          Registration
-        </h2>
-        <input 
-          type="email"
-          placeholder="Email addres"
-          v-model="register_form.email"
-        />
-        <input 
-          type="password"
-          placeholder="password"
-          v-model="register_form.password"
-        />
-        <input 
-          type="text"
-          placeholder="имя"
-          v-model="register_form.name"
-        />
-        <input
-          type="submit"
-          value="Register"
-        />
-      </form>
-
-      <!-- <button @click="test">
-        btn 
-      </button> -->
+        Нет аккаунта?
+        <router-link
+          :to="{ name: 'register'}"
+        >
+          зарегестрироваться
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -76,42 +45,26 @@ import { useStore } from 'vuex'
 export default {
   setup() {
     const login_form = ref({});
-    const register_form = ref({});
     const store = useStore();
 
     const login = () => {
       store.dispatch('login', login_form.value)
     }
 
-    const register = () => {
-      if(register_form.value.name) store.dispatch('register', register_form.value)
-      else alert('Введите имя')
-    }
-
-    const test = () => {
-      store.dispatch('test2')
-    }
-
     return {
       login_form,
-      register_form,
-      register,
       login
     }
   },
-  data() {
-    return {
-      showReg: false 
-    }
-  },
-  methods: {
-    changeRegVisible() {
-      this.showReg = !this.showReg
-    }
-  },
+  // data() {
+
+  // },
   beforeMount() {
     const store = useStore();
   }
 }
 
 </script>
+
+
+

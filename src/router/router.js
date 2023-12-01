@@ -5,6 +5,7 @@ import { useStore } from 'vuex';
 import { auth } from '../firebase'
 
 import Login from '../components/Login.vue'
+import Register from '../components/Register.vue'
 import Main from '../components/Main.vue'
 import Details from '../components/Details.vue'
 
@@ -19,21 +20,6 @@ const routes = [
     meta: {
       requireAuth: true
     },
-  //   beforeEnter: async (to, from) => {
-  //     const store = useStore();
-  //     const auth = getAuth();
-  //     console.log('before main')
-
-  //     // const user = await store.test2()
-  //     console.log('gg', store.state)
-  //     console.log('gggg', store)
-
-
-  //     if(!auth.currentUser) {
-  //       return  { name: 'login' }
-  //     }
-  //     return true
-  // },
   },
   {
     path: '/login',
@@ -41,7 +27,11 @@ const routes = [
     component: Login,
   },
   {
-    // path: '/details',
+    path: '/register',
+    name: 'register',
+    component: Register,
+  },
+  {
     path: '/details/',
     name: 'details',
     component: Details,
@@ -53,23 +43,19 @@ const router = createRouter({
   routes
 })
 
-// router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
 
-//   console.log('router', localStorage.auth)
-
-// if(to.path === '/login' && localStorage.auth) {
-//   console.log('redirect to main')
-
-//   next('/')
-//   return;
-// }
-// if (to.path === '/' && !localStorage.auth) {
-//   console.log('redirect to login')
-//   next('/login')
-//   return
-// }
-
-//   next();
-// })
+  const auth = getAuth()
+  auth.onAuthStateChanged(user => {    
+    if(to.path == '/register') {
+      return
+    }
+    else if (!user && to.path !== '/login') {
+      router.push('/login')
+    }
+    return
+  })
+  next();
+})
 
 export default router

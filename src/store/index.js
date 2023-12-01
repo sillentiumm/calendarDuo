@@ -17,7 +17,9 @@ export default createStore({
       year: null,
       month: null,
       day: null
-    } 
+    },
+    currentList: [],
+    allMessages: []
 }),
   mutations: {
     SET_USER (state, user) {
@@ -40,8 +42,12 @@ export default createStore({
           const distanceRef = ref(db, 'users/' + auth.currentUser.uid)
           onValue(distanceRef, (snapshot) => {
             const data = snapshot.val()
-            localStorage.setItem('room', data.room)
-            localStorage.setItem('email', email);
+            localStorage.setItem('auth', true);
+            localStorage.setItem('name', data.name);
+            localStorage.setItem('email', data.email);
+            if(data.room) {
+              localStorage.setItem('room', data.room)
+            }
             router.push({ path: '/' })
           })
         }).catch((error) => {
@@ -100,18 +106,16 @@ export default createStore({
         return
       }
       router.push('/')
-      console.log('true reg')
-      // commit('SET_USER', auth.currentUser)
     },
 
     async logout ({ commit }) {
       await signOut(auth)
       localStorage.setItem('auth', false);
+      localStorage.setItem('name', null);
       localStorage.setItem('email', null);
       localStorage.setItem('room', null);
       localStorage.removeItem('room')
       router.push({ path: '/login' })
-      console.log('logout')
     },
 
     async createRoom ({commit}, roomName) {
@@ -119,13 +123,13 @@ export default createStore({
       const dbRef = ref(getDatabase());
 
       get(child(dbRef, `rooms/${roomName}`)).then((snapshot) => {
-        console.log(roomName)
         if (!snapshot.exists()) {
           const referenceRoom = ref(db, 'rooms/' + roomName)
           const referenceUser = ref(db, 'users/' + auth.currentUser.uid)
           set(referenceRoom, {
             user1: auth.currentUser.uid,
           }),
+          
           update(referenceUser, {
             room: roomName
           })
@@ -175,22 +179,97 @@ export default createStore({
       });
       
     },
+
+    // async changeName({commit}, name) {
+    //   const db = getDatabase();
+    //   const dbRef = ref(getDatabase());
+    //   console.log(name)
+    // },
+
     test4() {
       const db = getDatabase();
       const distanceRef = ref(db, 'users/' + auth.currentUser.uid)
       onValue(distanceRef, (snapshot) => {
         const data = snapshot.val()
-        // updateDistance(postElement, data)
-        console.log(data)
       })
     },
+
     CalendarAddMessage({commit}, data) {
       let room = localStorage.room
       const db = getDatabase();
-      const referenceMessage = ref(db, 'rooms/' + room + '/' + data.date.year + '/' + data.date.month + '/' + data.date.day + '/')
-        update(referenceMessage, {
-          messages: data.data,
+      const referenceMessage = ref(db, 'rooms/' + room + '/messages/' + data.date.year + '/' + data.date.month + '/' + data.date.day)
+      const referenceAllMessage = ref(db, 'rooms/' + room + '/messages/all' )
+
+      // console.log(data.name, ' ', data.date.year, ' ', data.data.data )
+
+      if(room) {
+        push(referenceMessage, {
+          message: data.name + ': ' + data.data.data,
+          checked: false
         })
+
+        push(referenceAllMessage, {
+          name: data.name,
+          message: data.data.data,
+          year: data.date.year,
+          month: data.date.month,
+          day: data.date.day,
+        })
+      }
+    },
+
+    onValueCurrentDate(detailsData) {
+      let year = detailsData.state.currentRoomDate.year
+      let month = detailsData.state.currentRoomDate.month
+      let day = detailsData.state.currentRoomDate.day
+      let room = localStorage.room
+      const db = getDatabase();
+      const distanceRef = ref(db, 'rooms/' + room + '/messages/' + year + '/' + month + '/' + day)
+
+      onValue(distanceRef, (snapshot) => {
+        this.state.currentList = []
+        snapshot.forEach((childSnapshot) => {
+          this.state.currentList.push(childSnapshot.val())
+        })
+      })
+    },
+
+    onValueCurrentRoom() {
+      let room = localStorage.room
+      const db = getDatabase();
+      const distanceRef = ref(db, 'rooms/' + room + '/messages/all')
+
+      onValue(distanceRef, (snapshot) => {
+        this.state.allMessages = []
+        snapshot.forEach((childSnapshot) => {
+          this.state.allMessages.unshift(childSnapshot.val())
+        })
+        while (this.state.allMessages.length > 9) {
+          this.state.allMessages.pop()
+        }
+      })
+    },
+
+    changeCkekbox({commit}, data) {
+      let room = localStorage.room
+      const db = getDatabase();
+      const dbRef = ref(getDatabase());
+
+      get(child(dbRef, `rooms/${room}/messages/${data.year}/${data.month}/${data.day}`)).then((snapshot) => {
+        if (snapshot.exists()) {
+          let allMessages = snapshot.val()
+          let objName = Object.keys(allMessages)[data.index]
+          allMessages[objName].checked = !allMessages[objName].checked
+
+          const referenceChecked = ref(db, 'rooms/' + room + '/messages/' + data.year + '/' + data.month + '/' + data.day + '/' + objName)
+          update(referenceChecked, {
+            checked: allMessages[objName].checked
+          })
+        }
+      }).catch((error) => {
+        console.error(error);
+      });
     }
+
   }
 })
