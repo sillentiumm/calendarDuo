@@ -18,7 +18,6 @@
           <span class="checkmark"></span>
         </label>
         <div :class="{ checkboxTrue: item.checked }">{{ item.message }}</div>
-        <!-- <div class="checkbox-true" :class="{'active':item.id==n}">{{ item.message }}</div> -->
       </div>
       <div 
         v-if="!$store.state.currentList.length"
@@ -26,7 +25,6 @@
       >
         На этот день еще не заплонированы дела
       </div>
-
       <div class="details-table-list__add">
         <input 
           type="text"
@@ -62,7 +60,6 @@ export default {
     }
 
     const changeCkekbox = (item, index) => {
-      // console.log(item)
       store.dispatch('changeCkekbox', {
         message: item.message, checked: item.checked, index: index, 
         year: store.state.currentRoomDate.year, month: store.state.currentRoomDate.month, day: store.state.currentRoomDate.day
@@ -97,8 +94,6 @@ export default {
     this.date.day = this.$route.query.day
 
     this.specValue()
-    // console.log(store.state.currentList)
-    console.log(this.addMessage_form)
   },
 }
 

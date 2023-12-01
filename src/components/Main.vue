@@ -7,10 +7,8 @@
           v-if="!user.room"
           class="main-bubble"
         >
-          <!-- Воспользуйтесь настройками <br> для смены имени пользователя и вступлением в комнату -->
           Воспользуйтесь настройками для вступления в комнату
         </div>
-
         <div class="mobile">
           <div class="main-details-mini">
             <div class="main-details-block-mini main-details-messages"
@@ -61,7 +59,6 @@
             </div>
           </div>
         </div>
-        
       </div>
     </div>
 
@@ -115,11 +112,8 @@
                 type="submit"
                 value="✔"
               />
-            </div>
-            
-            
+            </div>            
           </form>
-
           <form 
             @submit.prevent="joinRoom" 
             v-if="!user.room"
@@ -139,7 +133,6 @@
               />
             </div>
           </form>
-
           <button 
             @click="$store.dispatch('logout')"
             class="main-form-logout"
@@ -194,7 +187,6 @@
         </div>
       </div>
     </div>
-
     <div  v-if="this.contentVisible == 'theme'" class="main-mobile">
       <div class="main-mobile-content">
         <h3 class="main-right-content__title">В разработке</h3>
@@ -205,7 +197,6 @@
         </div>
       </div>
     </div>
-
     <div v-if="this.contentVisible == 'settings'" class="main-mobile">
       <div class="main-mobile-content"
       >
@@ -237,7 +228,6 @@
               />
             </div>
           </form>
-
           <form 
             @submit.prevent="joinRoom" 
             v-if="!user.room"
@@ -257,7 +247,6 @@
               />
             </div>
           </form>
-
           <button 
             @click="$store.dispatch('logout')"
             class="main-form-logout"
@@ -272,7 +261,6 @@
         </div>
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -302,17 +290,12 @@ export default {
       store.dispatch('onValueCurrentRoom')
     }
 
-    // const changeName = () => {
-    //   store.dispatch('changeName', change_name_form)
-    // }
-
     return {
       create_room_form,
       join_room_form,
       createRoom,
       joinRoom,
       specValue,
-      // changeName,
     }
   },
   data() {
@@ -333,7 +316,6 @@ export default {
       currentDate: null,
       currentMonth: '',
       currentYear: '',
-      
       contentVisible: null
     }
   },
